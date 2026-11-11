@@ -1,0 +1,31 @@
+SKU-days analysed: 18,000
+Stockout events: 223 (1.24%)
+
+PARETO
+                         root_cause  events  pct  cum_pct
+                       Demand spike     118 52.9     52.9
+       Supplier replenishment delay      95 42.6     95.5
+Other (shrink / data / unexplained)      10  4.5    100.0
+
+Top-2 causes: 95.5% of events
+
+FULFILLMENT CENTERS
+       sku_days  stockouts  lost_units  rate_pct
+fc_id                                           
+FC1        3600         54        5001      1.50
+FC2        3600         50        4932      1.39
+FC3        3600         46        4831      1.28
+FC4        3600         43        3954      1.19
+FC5        3600         30        2735      0.83
+
+Best-vs-worst ratio: 1.80x
+
+5-WHYS
+- Problem: 1.24% of SKU-days ended with demand exceeding available stock.
+- Why 1? Available stock hit zero before demand was met (lost units: 21,453).
+- Why 2? Either demand ran >2x its trailing average (118 events) or the PO arrived late (95 events, avg 3.0 days late).
+- Why 3? Reorder points assume a fixed 3-day lead time and average demand; neither buffers spikes (62% of spikes coincide with a promo) nor delays.
+- Why 4? Safety stock is not promo-aware and does not use actual lead-time variability.
+- Root cause: static replenishment parameters in a variable demand/supply environment.
+
+Median safety-stock uplift on affected SKUs: 16%
